@@ -1,0 +1,106 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+ body{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+ }
+.login{
+    display: flex;
+    overflow: hidden;
+}
+.left{
+    width:50vw;
+    height: 100vh;
+    padding:5%;
+}
+.right{
+    width: 50vw;;
+    height: 100vh;
+    padding:5%;
+}
+.des{
+    margin-top: -5%;
+}
+.loginForm{
+    background-color: white;
+    border-radius: 10px;
+    width:50vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+    gap:10%;
+}
+.box{
+    border: 2px solid white;
+    text-align: justify;
+    padding: 4%;
+    width:30vw;
+    margin-left: 4rem;
+    margin-top: 5rem;
+    background: transparent;
+    box-shadow: 5px 10px transparent;
+}
+.heading{
+    color:white;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: xx-large;
+}
+.learn{
+    color:#14144d;
+}
+.caption{
+    margin-top: 2rem;
+    color:white;
+}
+
+.email, .pass{
+width:25vw;
+height:7vh;
+border-radius: 10px;
+border:1px;
+background:grey;
+color:white;
+padding:1%;
+outline: 2px cyan;
+}
+.email::placeholder, .pass::placeholder{
+    color:white;
+}
+.loginBtn{
+    width:15vw;
+    height:6vh;
+    border-radius: 10px;
+    border:1px;
+    background: linear-gradient( to right, #eeaeca, #94bbe9);
+    margin-left: 10%;
+    cursor: pointer;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: large;
+    
+    
+}
+.left{
+    background: linear-gradient( to right, #eeaeca, #94bbe9);
+}
+
+@media only screen and (min-width:200px) and (max-width: 375px){
+    .left{
+        display:none;
+    }
+    .right{
+        justify-content: center;
+        width: 100vw;
+    }
+    .email, .pass{
+        width:65vw;
+        height:9vh;
+        padding:2%;
+    }
+    .loginBtn{
+        width: 40vw;
+        margin-left: 2rem;
+    }
+}
