@@ -26,7 +26,7 @@ const navigate=useNavigate()
     </div>
 
     <div className="right">
-    <form action="POST" className="loginForm">
+    <form  className="loginForm">
         <h2>Hey there, </h2>
         <p className='des'>Enter the details below</p>
         <input type="email" placeholder='Email address' name='email' className='email' />
