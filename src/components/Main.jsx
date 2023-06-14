@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { questionData } from './questions';
-import './Main.css'
+import './Main.css';
 
 const Main = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const questionsPerPage = 1;
   const startIndex = (currentPage - 1) * questionsPerPage;
   const endIndex = startIndex + questionsPerPage;
@@ -11,10 +12,12 @@ const Main = () => {
   const totalQuestions = questionData.questions.length;
   const answeredQuestions = startIndex;
   const currentQuestion = startIndex + 1;
-  const initialTimeInSeconds = 3600; 
+  const initialTimeInSeconds = 10; // Set the initial time to 10 seconds for testing
   const [timeRemaining, setTimeRemaining] = useState(
     parseInt(localStorage.getItem('timeRemaining')) || initialTimeInSeconds
   );
+  const [score, setScore] = useState(0);
+  const [quizEnded, setQuizEnded] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('timeRemaining', timeRemaining.toString());
@@ -23,6 +26,9 @@ const Main = () => {
     if (timeRemaining > 0) {
       const timer = setTimeout(() => setTimeRemaining(timeRemaining - 1), 1000);
       return () => clearTimeout(timer);
+    } else {
+      // Timer has reached 0, end the quiz and display the score
+      setQuizEnded(true);
     }
   }, [timeRemaining]);
 
@@ -45,66 +51,100 @@ const Main = () => {
     return `${hours}:${padZero(minutes)}:${padZero(seconds)}`;
   };
 
- 
-
   const handleOptionChange = (questionIndex, optionIndex) => {
-    // Handle the selected option change here
-    console.log(`Selected option for question ${questionIndex + 1}: ${optionIndex + 1}`);
-  };
+    const selectedOption = questionsData[questionIndex].options[optionIndex];
+    const correctAnswer = questionsData[questionIndex].answer;
 
+    // Check if the selected option is correct
+    const isCorrect = selectedOption === correctAnswer;
+
+    // Update the score if the answer is correct
+    if (isCorrect) {
+      setScore((prevScore) => prevScore + 1);
+    }
+
+    // Update the selected option for the current question
+    setSelectedOptions((prevSelectedOptions) => {
+      const newSelectedOptions = [...prevSelectedOptions];
+      newSelectedOptions[currentPage - 1] = optionIndex;
+      return newSelectedOptions;
+    });
+  };
 
   const calculateProgress = () => {
     return Math.floor((answeredQuestions / totalQuestions) * 100);
   };
+
   const isLastQuestion = currentPage === Math.ceil(totalQuestions / questionsPerPage);
 
   const handleSubmit = () => {
     // Handle the form submission here
     console.log('Quiz submitted');
   };
+
+  const displayScore = () => {
+    return (
+      <div className="scoreContainer">
+        <h3>Total Score: {score}</h3>
+      </div>
+    );
+  };
+
   return (
-    <div className='questionContainer'>
-      <div className='head'>
-       <p>Question {currentQuestion} of {totalQuestions}</p>
-       <p className='time'>Time Remaining: <br /> <span className="timer">{formatTime(timeRemaining)}</span></p>
-       </div>
-       <div className='questions'>
-      {questionsData.slice(startIndex, endIndex).map((question, questionIndex) => (
-        <div key={questionIndex}>
-          <h3>{currentQuestion}. {question.question}</h3>
-          {question.options.map((option, optionIndex) => (
-            <div key={optionIndex}>
-              <label>
-                <input
-                  type="radio"
-                  name={`question-${questionIndex}`}
-                  value={option}
-                  onChange={() => handleOptionChange(questionIndex, optionIndex)}
-                />
-                {option}
-              </label>
-            </div>
-          ))}
+    <div className="questionContainer">
+      <div className="head">
+        <p>
+          Question {currentQuestion} of {totalQuestions}
+        </p>
+        <p className="time">
+          Time Remaining: <br /> <span className="timer">{formatTime(timeRemaining)}</span>
+        </p>
+      </div>
+      <div className="questions">
+        {questionsData.slice(startIndex, endIndex).map((question, questionIndex) => (
+          <div key={questionIndex}>
+            <h3>
+              {currentQuestion}. {question.question}
+            </h3>
+            {question.options.map((option, optionIndex) => (
+              <div key={optionIndex}>
+                <label>
+                  <input
+                    type="radio"
+                    name={`question-${questionIndex}`}
+                    value={option}
+                    checked={selectedOptions[questionIndex] === optionIndex}
+                    onChange={() => handleOptionChange(startIndex + questionIndex, optionIndex)}
+                  />
+                  {option}
+                </label>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="controls">
+        <div>
+          <p>Progress: {calculateProgress()}%</p>
         </div>
-      ))}
-      </div>
-      <div className='controls'>
-      <div>
-        <p>Progress: {calculateProgress()}%</p>
-      </div>
-      <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
-        Previous Page
-      </button>
-      {isLastQuestion ? (
-          <button onClick={handleSubmit}>Submit</button>
-        ) : (
-          <button
-            disabled={endIndex >= questionsData.length}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            Next Page
-          </button>
+        {!quizEnded && (
+          <>
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+              Previous Page
+            </button>
+            {isLastQuestion ? (
+              <button onClick={handleSubmit}>Submit</button>
+            ) : (
+              <button
+                disabled={endIndex >= questionsData.length}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
+                Next Page
+              </button>
+            )}
+          </>
         )}
+        {quizEnded && displayScore()}
       </div>
     </div>
   );
