@@ -47,7 +47,7 @@ button{
 @media only screen and (min-width: 360px ) and (max-width: 400px){
     .controls{
         gap: 2em;
-        margin-top: 25em;
+        margin-top: 15em;
     }
     button{
         width: 28vw;
