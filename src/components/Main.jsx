@@ -1,21 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { questionData } from './questions';
 import './Main.css';
-
-
-
-const ScorePopup = ({ score, onClose }) => {
-  return (
-    <div className="popup">
-      <div className="popup-content">
-        <h3>Quiz Ended</h3>
-        <p>Total Score: {score}</p>
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-};
-
+import { useNavigate } from 'react-router-dom';
 const Main = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -26,17 +12,16 @@ const Main = () => {
   const totalQuestions = questionData.questions.length;
   const answeredQuestions = startIndex;
   const currentQuestion = startIndex + 1;
-  const initialTimeInSeconds = 3600; // Set the initial time to 10 seconds for testing
+  const initialTimeInSeconds = 3600;
+
+
+  const navigate = useNavigate()
+  
   const [timeRemaining, setTimeRemaining] = useState(
     parseInt(localStorage.getItem('timeRemaining')) || initialTimeInSeconds
   );
   const [score, setScore] = useState(0);
-  const [quizEnded, setQuizEnded] = useState(false);
 
-  const closePopup = () => {
-    setQuizEnded(false);
-  };
-  
   useEffect(() => {
     localStorage.setItem('timeRemaining', timeRemaining.toString());
 
@@ -45,10 +30,10 @@ const Main = () => {
       const timer = setTimeout(() => setTimeRemaining(timeRemaining - 1), 1000);
       return () => clearTimeout(timer);
     } else {
-      // Timer has reached 0, end the quiz and display the score
-      setQuizEnded(true);
+      // Timer is up, route to the score page and display the score
+      navigate(`/score/${score}`);
     }
-  }, [timeRemaining]);
+  }, [timeRemaining, score, navigate]);
 
   useEffect(() => {
     // Clear local storage when the quiz is completed
@@ -72,15 +57,15 @@ const Main = () => {
   const handleOptionChange = (questionIndex, optionIndex) => {
     const selectedOption = questionsData[questionIndex].options[optionIndex];
     const correctAnswer = questionsData[questionIndex].answer;
-
+  
     // Check if the selected option is correct
     const isCorrect = selectedOption === correctAnswer;
-
+  
     // Update the score if the answer is correct
     if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
     }
-
+  
     // Update the selected option for the current question
     setSelectedOptions((prevSelectedOptions) => {
       const newSelectedOptions = [...prevSelectedOptions];
@@ -88,24 +73,19 @@ const Main = () => {
       return newSelectedOptions;
     });
   };
-
+  
   const calculateProgress = () => {
     return Math.floor((answeredQuestions / totalQuestions) * 100);
   };
 
   const isLastQuestion = currentPage === Math.ceil(totalQuestions / questionsPerPage);
 
+ 
+  
   const handleSubmit = () => {
     // Handle the form submission here
     console.log('Quiz submitted');
-  };
-
-  const displayScore = () => {
-    return (
-      <div className="scoreContainer">
-        <h3>Total Score: {score}</h3>
-      </div>
-    );
+    navigate(`/score/${score}`); // Route to the score page with the score as a parameter
   };
 
   return (
@@ -131,7 +111,7 @@ const Main = () => {
                     type="radio"
                     name={`question-${questionIndex}`}
                     value={option}
-                    checked={selectedOptions[questionIndex] === optionIndex}
+                    checked={selectedOptions[startIndex] === optionIndex}
                     onChange={() => handleOptionChange(startIndex + questionIndex, optionIndex)}
                   />
                   {option}
@@ -145,25 +125,20 @@ const Main = () => {
         <div>
           <p>Progress: {calculateProgress()}%</p>
         </div>
-        {!quizEnded && (
+        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+          Previous
+        </button>
+        {isLastQuestion ? (
           <>
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
-              Previous
-            </button>
-            {isLastQuestion ? (
-              <button onClick={handleSubmit}>Submit</button>
-            ) : (
-              <button
-                disabled={endIndex >= questionsData.length}
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
-                Next 
-              </button>
-            )}
+            <button onClick={handleSubmit}>Submit</button>
           </>
-        )}
-        {quizEnded && (
-          <ScorePopup score={score} onClose={closePopup} />
+        ) : (
+          <button
+            disabled={endIndex >= questionsData.length}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Next
+          </button>
         )}
       </div>
     </div>

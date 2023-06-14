@@ -104,3 +104,22 @@ outline: 2px cyan;
         margin-left: 2rem;
     }
 }
+
+@media only screen and (min-width:375px) and (max-width: 500px){
+    .left{
+        display:none;
+    }
+    .right{
+        justify-content: center;
+        width: 100vw;
+    }
+    .email, .pass{
+        width:65vw;
+        height:9vh;
+        padding:2%;
+    }
+    .loginBtn{
+        width: 40vw;
+        margin-left: 2rem;
+    }
+}
