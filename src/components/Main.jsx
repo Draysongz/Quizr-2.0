@@ -2,6 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { questionData } from './questions';
 import './Main.css';
 
+
+
+const ScorePopup = ({ score, onClose }) => {
+  return (
+    <div className="popup">
+      <div className="popup-content">
+        <h3>Quiz Ended</h3>
+        <p>Total Score: {score}</p>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
 const Main = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -12,13 +26,17 @@ const Main = () => {
   const totalQuestions = questionData.questions.length;
   const answeredQuestions = startIndex;
   const currentQuestion = startIndex + 1;
-  const initialTimeInSeconds = 10; // Set the initial time to 10 seconds for testing
+  const initialTimeInSeconds = 3600; // Set the initial time to 10 seconds for testing
   const [timeRemaining, setTimeRemaining] = useState(
     parseInt(localStorage.getItem('timeRemaining')) || initialTimeInSeconds
   );
   const [score, setScore] = useState(0);
   const [quizEnded, setQuizEnded] = useState(false);
 
+  const closePopup = () => {
+    setQuizEnded(false);
+  };
+  
   useEffect(() => {
     localStorage.setItem('timeRemaining', timeRemaining.toString());
 
@@ -130,7 +148,7 @@ const Main = () => {
         {!quizEnded && (
           <>
             <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
-              Previous Page
+              Previous
             </button>
             {isLastQuestion ? (
               <button onClick={handleSubmit}>Submit</button>
@@ -139,12 +157,14 @@ const Main = () => {
                 disabled={endIndex >= questionsData.length}
                 onClick={() => setCurrentPage(currentPage + 1)}
               >
-                Next Page
+                Next 
               </button>
             )}
           </>
         )}
-        {quizEnded && displayScore()}
+        {quizEnded && (
+          <ScorePopup score={score} onClose={closePopup} />
+        )}
       </div>
     </div>
   );

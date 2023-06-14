@@ -43,3 +43,13 @@ button{
     font-size: large;
     cursor: pointer;
 }
+
+@media only screen and (min-width: 375px ) and (max-width: 400px){
+    .controls{
+        gap: 2em;
+    }
+    button{
+        width: 28vw;
+        padding: 1%;
+    }
+}
